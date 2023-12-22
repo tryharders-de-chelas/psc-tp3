@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <glib.h>
 
 #define LINESIZE 256
+#define TRUE 1
+#define FALSE 0
+
 
 // Structure of dictionary 
 typedef struct Dictionary { … } Dictionary
@@ -29,7 +33,7 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
         char *word = strtok(words, delims);
         while(word != NULL){
             if(dictionary_lookup(dictionary, word) == 0){
-                g_hash_table_insert(dictionary -> NomeDaHashTableQueOMárioMeteu , word, NULL);
+                g_hash_table_insert(dictionary -> hash_table , word, NULL);
             }
             word = strtok(NULL, " \n\t\r");
         }
@@ -41,14 +45,12 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
 // Function to lookup a word in the dictionary, if the word is in the dictionary return 1, else return 0
 
 int dictionary_lookup(Dictionary *dictionary, const char *word){
-    return g_hash_table_lookup(dictionary -> NomeDaHashTableQueOMárioMeteu , word);
-    // Retorna TRUE ou FALSE , necessário criar uma .h para que TRUE = 1 e FALSE = 0
+    return g_hash_table_lookup(dictionary -> hash_table , word);
 }
 
 // Function to destroy the dictionary -> free all the memory of the dictionary also using malloc
 void dictionary_destroy(Dictionary *dictionary){
-    g_hash_table_remove_all(dictionary -> NomeDaHashTableQueOMárioMeteu);
-    g_hash_table_destroy(dictionary -> NomeDaHashTableQueOMárioMeteu);
+    g_hash_table_remove_all(dictionary -> hash_table);
     free(dictionary);
     return;
 }
