@@ -1,8 +1,19 @@
+
+#include <glib.h> 
+
+
+
 // Structure of dictionary 
-typedef struct Dictionary { … } Dictionary
+typedef struct Dictionary {
+	GHashTable *hash_table;
+	} Dictionary
 
 // Function to create a new dictionary using malloc *verify Glib library structures to create a new dictionary and use the correct functions*
-Dictionary *dictionary_create()
+Dictionary *dictionary_create(){
+	Dictionary *dictionary = (Dictionary *)malloc((sizeof(Dictionary)));
+	dictionary -> hash_table = g_hash_table_new(g_str_hash, g_str_equal);
+	return dictionary;	
+	}
 
 /*
  / Function to add a word to the dictionary
