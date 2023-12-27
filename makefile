@@ -1,12 +1,23 @@
+CC = gcc
+CFLAGS = -Wall -Werror $(shell pkg-config --cflags glib-2.0)
+LDFLAGS = -lm $(shell pkg-config --libs glib-2.0)
+SOURCES = Dictionary.c test_dict.c
+OBJECTS = $(SOURCES:.c=.o)
+OUT = test_dict
+
 test: clean
 	echo "Tested successfully"
 
 clean: run
-	rm ./test_dict
+	rm -f $(OBJECTS) $(OUT)
 
 run: compile
-	./test_dict -f ./wordlist-ao-20101027.txt -w palavra
+	chmod +x $(OBJECTS)
+	./test_dict -f ./wordlist.txt -w palavra
 
-compile:
-	gcc -g -Wall test_dict.c Dictionary.c -o test_dict
+compile: $(OBJECTS)
+	$(CC) $(OBJECTS) -o $(OUT) $(LDFLAGS)
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
+#include "Dictionary.h"
 
 Dictionary * dictionary_create();
 
@@ -16,13 +17,10 @@ int setup_env(const char * wordlist, const char * word){
     dictionary_add(dict, wordlist);
     int exists = dictionary_lookup(dict, word);
     dictionary_destroy(dict);
-    if(exists)
-        return 0;
-    return 1;
+    return exists;
 }
 
 int main(int argc, char * argv[]){
-    FILE * filepath = NULL;
     char * wordlist = NULL;
     char * word = NULL;
     int errflg =  0;
@@ -50,21 +48,24 @@ int main(int argc, char * argv[]){
     }
 
     if(wordlist == NULL){
-        printf("[error] - no wordlist was given");
+        printf("[error] - no wordlist was given\n");
         errflg++;
     }
 
     if(word == NULL){
-        printf("[error] - no word was given");
+        printf("[error] - no word was given\n");
         errflg++;
     }
 
     if(errflg)
         return 1;
 
-    if(setup_env(wordlist, word))
-        printf("[OK] - word: %s, file: %s", word, filepath);
+    if(setup_env(wordlist, word) == 0){
+        printf("[OK] - word '%s' found in file '%s\n'", word, wordlist);
         return 0;
+    } else{
+        printf("[ERROR]  - word '%s' not found in file '%s\n'", word, wordlist);
+    }
     return 1;
 
 }

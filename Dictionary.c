@@ -1,17 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <glib.h>
+#include "Dictionary.h"
 
 #define LINESIZE 256
-#define TRUE 1
-#define FALSE 0
 
-
-// Structure of dictionary 
-typedef struct Dictionary {
-	GHashTable *hash_table;
-	} Dictionary
+Dictionary * dictionary_create();
+void dictionary_add(Dictionary *dictionary, const char *filename);
+int dictionary_lookup(Dictionary *dictionary, const char *word);
+void dictionary_destroy(Dictionary *dictionary);
 
 // Function to create a new dictionary using malloc *verify Glib library structures to create a new dictionary and use the correct functions*
 Dictionary *dictionary_create(){
@@ -51,7 +48,9 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
 // Function to lookup a word in the dictionary, if the word is in the dictionary return 1, else return 0
 
 int dictionary_lookup(Dictionary *dictionary, const char *word){
-    return g_hash_table_lookup(dictionary -> hash_table , word);
+    if(g_hash_table_lookup(dictionary -> hash_table , word) == NULL)
+        return 1;
+    return 0;
 }
 
 // Function to destroy the dictionary -> free all the memory of the dictionary also using malloc
