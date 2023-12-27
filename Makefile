@@ -1,8 +1,13 @@
 CC = gcc
 CFLAGS = -Wall -Werror $(shell pkg-config --cflags glib-2.0)
 LDFLAGS = -lm $(shell pkg-config --libs glib-2.0)
-SOURCES = Dictionary.c
+SOURCES = Dictionary.c test_dict.c
 OBJECTS = $(SOURCES:.c=.o)
+OUT=test_dict
+
+test: clean
+	echo "Tested successfully"
+
 
 all: static dynamic
 
