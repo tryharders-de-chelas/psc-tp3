@@ -45,12 +45,6 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
 // Function to lookup a word in the dictionary, if the word is in the dictionary return 1, else return 0
 
 int dictionary_lookup(Dictionary *dictionary, const char *word){
-    //printf("%d\n", g_hash_table_size(dictionary -> hash_table));
-    //if(g_hash_table_contains(dictionary -> hash_table , word) == TRUE){
-    //    return TRUE;
-    //}
-    //printf("FALSEEEEEEEEEEEE\n");
-    //return FALSE;
     return g_hash_table_contains(dictionary -> hash_table , word);
 }
 
