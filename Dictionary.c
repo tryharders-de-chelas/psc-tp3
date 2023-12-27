@@ -4,9 +4,6 @@
 #include <glib.h>
 
 #define LINESIZE 256
-//#define TRUE 1
-//#define FALSE 0
-
 
 // Structure of dictionary 
 typedef struct Dictionary {
@@ -47,7 +44,7 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
             if(dictionary_lookup(dictionary, word) == 0){
                 g_hash_table_insert(dictionary -> hash_table , word, NULL);
             }
-            word = strtok(NULL, " \n\t\r");
+            word = strtok(NULL,delims);
         }
     }
 
