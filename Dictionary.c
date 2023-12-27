@@ -1,17 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <glib.h>
+#include "Dictionary.h"
 
 #define LINESIZE 256
-#define TRUE 1
-#define FALSE 0
 
-
-// Structure of dictionary 
-typedef struct Dictionary {
-	GHashTable *hash_table;
-	} Dictionary
+Dictionary * dictionary_create();
+void dictionary_add(Dictionary *dictionary, const char *filename);
+int dictionary_lookup(Dictionary *dictionary, const char *word);
+void dictionary_destroy(Dictionary *dictionary);
 
 // Function to create a new dictionary using malloc *verify Glib library structures to create a new dictionary and use the correct functions*
 Dictionary *dictionary_create(){
@@ -31,27 +28,24 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
         printf("Error opening file %s\n", filename);
         return;
     }
-
     char words[LINESIZE];
     const char delims[] = " \n\t\r\v";
-     
-     while(fgets(words,sizeof(words),file) != NULL){
+
+    while(fgets(words,sizeof(words),file)){
         char *word = strtok(words, delims);
         while(word != NULL){
-            if(dictionary_lookup(dictionary, word) == 0){
-                g_hash_table_insert(dictionary -> hash_table , word, NULL);
-            }
+            g_hash_table_insert(dictionary->hash_table, g_strdup(word),NULL);
             word = strtok(NULL, " \n\t\r");
         }
     }
-
+    
     fclose(file);
     return;
 }
 // Function to lookup a word in the dictionary, if the word is in the dictionary return 1, else return 0
 
 int dictionary_lookup(Dictionary *dictionary, const char *word){
-    return g_hash_table_lookup(dictionary -> hash_table , word);
+    return g_hash_table_contains(dictionary -> hash_table , word);
 }
 
 // Function to destroy the dictionary -> free all the memory of the dictionary also using malloc
