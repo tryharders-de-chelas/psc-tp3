@@ -60,12 +60,12 @@ int main(int argc, char * argv[]){
     if(errflg)
         return 1;
 
-    if(setup_env(wordlist, word) == 0){
+    if(setup_env(wordlist, word) == TRUE){
         printf("[OK] - word '%s' found in file '%s\n'", word, wordlist);
-        return 0;
+        return TRUE;
     } else{
         printf("[ERROR]  - word '%s' not found in file '%s\n'", word, wordlist);
     }
-    return 1;
+    return FALSE;
 
 }

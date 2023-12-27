@@ -13,7 +13,7 @@ clean: run
 
 run: compile
 	chmod +x $(OBJECTS)
-	./test_dict -f ./wordlist.txt -w palavra
+	./test_dict -f ./wordlist.txt -w sim
 
 compile: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(OUT) $(LDFLAGS)

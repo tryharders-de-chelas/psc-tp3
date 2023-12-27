@@ -35,22 +35,22 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
      while(fgets(words,sizeof(words),file) != NULL){
         char *word = strtok(words, delims);
         while(word != NULL){
-            if(dictionary_lookup(dictionary, word) == 0){
-                g_hash_table_insert(dictionary -> hash_table , word, NULL);
-            }
-            word = strtok(NULL, " \n\t\r");
+            g_hash_table_insert(dictionary -> hash_table , word, NULL);
+            word = strtok(NULL, delims);
         }
     }
-
     fclose(file);
     return;
 }
 // Function to lookup a word in the dictionary, if the word is in the dictionary return 1, else return 0
 
 int dictionary_lookup(Dictionary *dictionary, const char *word){
-    if(g_hash_table_lookup(dictionary -> hash_table , word) == NULL)
-        return 1;
-    return 0;
+    //printf("%d\n", g_hash_table_size(dictionary -> hash_table));
+    if(g_hash_table_contains(dictionary -> hash_table , word) == TRUE){
+        return TRUE;
+    }
+    //printf("FALSEEEEEEEEEEEE\n");
+    return FALSE;
 }
 
 // Function to destroy the dictionary -> free all the memory of the dictionary also using malloc
