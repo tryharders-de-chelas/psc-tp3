@@ -28,17 +28,17 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
         printf("Error opening file %s\n", filename);
         return;
     }
-
     char words[LINESIZE];
     const char delims[] = " \n\t\r\v";
-     
-     while(fgets(words,sizeof(words),file) != NULL){
+
+    while(fgets(words,sizeof(words),file)){
         char *word = strtok(words, delims);
         while(word != NULL){
-            g_hash_table_insert(dictionary -> hash_table , word, NULL);
-            word = strtok(NULL, delims);
+            g_hash_table_insert(dictionary->hash_table, g_strdup(word),NULL);
+            word = strtok(NULL, " \n\t\r");
         }
     }
+    
     fclose(file);
     return;
 }
@@ -46,11 +46,12 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
 
 int dictionary_lookup(Dictionary *dictionary, const char *word){
     //printf("%d\n", g_hash_table_size(dictionary -> hash_table));
-    if(g_hash_table_contains(dictionary -> hash_table , word) == TRUE){
-        return TRUE;
-    }
+    //if(g_hash_table_contains(dictionary -> hash_table , word) == TRUE){
+    //    return TRUE;
+    //}
     //printf("FALSEEEEEEEEEEEE\n");
-    return FALSE;
+    //return FALSE;
+    return g_hash_table_contains(dictionary -> hash_table , word);
 }
 
 // Function to destroy the dictionary -> free all the memory of the dictionary also using malloc

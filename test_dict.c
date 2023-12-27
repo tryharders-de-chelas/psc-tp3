@@ -12,11 +12,25 @@ int dictionary_lookup(Dictionary * dictionary, const char * word);
 
 void dictionary_destroy(Dictionary * dictionary);
 
+void print_hash(gpointer key, gpointer value, gpointer user_data) {
+    printf("Key: %p, Value: %p\n", key, value);
+
+}
+
+void dictionary_print(Dictionary *dict) {
+    printf("Contents of the hash table:\n");
+    g_hash_table_foreach(dict->hash_table, print_hash, NULL);
+
+}
+
+
 int setup_env(const char * wordlist, const char * word){
     Dictionary * dict = dictionary_create();
     dictionary_add(dict, wordlist);
     int exists = dictionary_lookup(dict, word);
+    dictionary_print(dict);
     dictionary_destroy(dict);
+    
     return exists;
 }
 
