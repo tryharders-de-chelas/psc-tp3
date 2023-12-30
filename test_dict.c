@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
-#include "Dictionary.h"
+#include "structs.h"
 
 Dictionary * dictionary_create();
 

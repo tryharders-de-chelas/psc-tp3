@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <getopt.h>
-#include "Dictionary.h"
+#include "structs.h"
+
+#define LINE_MAX 2056
 
 Dictionary * dictionary_create();
 
@@ -14,11 +17,33 @@ void dictionary_destroy(Dictionary * dictionary);
 
 
 void check_text(Dictionary * dict, char * text_file){
-    // TODO
+    FILE * file = fopen(text_file, "r");
+    if(file == NULL){
+        printf("[error] - couldn't open the file");
+        exit(EXIT_FAILURE);
+    }
+    char words[LINE_MAX];
+    const char delims[] = " \n\t";
+
+    while(fgets(words, sizeof(words), file)){
+        char * word = strtok(words, delims);
+        while(word != NULL){
+            //TODO
+            if(dictionary_lookup(dict, word) == FALSE){
+
+            }
+            word = strtok(NULL, delims);
+        }
+    }
+
 }
 
 void check_word(Dictionary * dict, char * word){
-    // TODO
+    if(dictionary_lookup(dict, word) == TRUE){
+        printf("Every given word was found in the dictionary");
+    } else {
+        printf("word: %s position: 0;0\n", word);
+    }
 }
 
 void spell_check(char * text_file, char * word, char ** wordlists, int num_wordlists){
