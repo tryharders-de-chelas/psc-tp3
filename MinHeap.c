@@ -20,10 +20,12 @@ MinHeap* createMinHeap() {
 }
 
 // Function to insert a new element into the min heap
-void insert(MinHeap *minHeap, Position * key, char * value) {
+void insert(MinHeap *minHeap, Position key, char * value) {
     Node * node = g_new(Node, 1);
     node->key = key;
-    node->value = value;
+    printf("key-> row:%d, col: %d\n", key.row, key.column);
+    node->value = g_strdup(value);
+    printf("value: %s\n\n", node->value);
     g_tree_insert(minHeap->elements, &(node->key), &(node->value));
 }
 
@@ -32,14 +34,17 @@ gpointer heap_lookup(MinHeap * minHeap, const char * key){
 }
 
 // Function to extract the minimum element from the min heap
-gpointer * extractMin(MinHeap *minHeap) {
+char * extractMin(MinHeap *minHeap) {
     if (!g_tree_nnodes(minHeap->elements)) {
         g_assert_not_reached();  // Heap is empty
         return NULL;
     }
+
     GTreeNode * root = g_tree_node_first(minHeap->elements);
-    gpointer * word = g_tree_node_value(root);
-    //g_tree_remove(minHeap->elements, word);
+    char * key = g_tree_node_key(root);  // Get the key of the root node
+    char * word = g_tree_lookup(minHeap->elements, key);  // Get the value associated with the key
+    printf("return value: %s\n", word);
+    g_tree_remove(minHeap->elements, key);  // Remove the node using the key
     return word;
 }
 
