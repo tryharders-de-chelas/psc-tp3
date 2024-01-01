@@ -3,7 +3,7 @@
 #include <string.h>
 #include "structs.h"
 
-gint compare_positions(gconstpointer a, gconstpointer b, gpointer user_data){
+gint compare_positions(gconstpointer a, gconstpointer b){
     const Position * pos1 = (const Position *)a;
     const Position * pos2 = (const Position *)b;
 
@@ -20,7 +20,7 @@ MinHeap* createMinHeap() {
 }
 
 // Function to insert a new element into the min heap
-void insert(MinHeap *minHeap, Position key, char * value) {
+void insert(MinHeap *minHeap, Position * key, char * value) {
     Node * node = g_new(Node, 1);
     node->key = key;
     node->value = value;
@@ -32,15 +32,14 @@ gpointer heap_lookup(MinHeap * minHeap, const char * key){
 }
 
 // Function to extract the minimum element from the min heap
-char * extractMin(MinHeap *minHeap) {
+gpointer * extractMin(MinHeap *minHeap) {
     if (!g_tree_nnodes(minHeap->elements)) {
         g_assert_not_reached();  // Heap is empty
         return NULL;
     }
-    char * word = g_tree_node_value(
-        g_tree_node_first(minHeap->elements)
-    );
-    g_tree_remove(minHeap->elements, word);
+    GTreeNode * root = g_tree_node_first(minHeap->elements);
+    gpointer * word = g_tree_node_value(root);
+    //g_tree_remove(minHeap->elements, word);
     return word;
 }
 

@@ -1,9 +1,9 @@
 CC = gcc
 CFLAGS = -Wall -Werror $(shell pkg-config --cflags glib-2.0)
 LDFLAGS = -lm $(shell pkg-config --libs glib-2.0)
-SOURCES = Dictionary.c test_dict.c
+SOURCES = Dictionary.c spell_checker.c MinHeap.c
 OBJECTS = $(SOURCES:.c=.o)
-OUT = test_dict
+OUT = spell_checker
 
 test: clean
 	echo "Tested successfully"
@@ -13,7 +13,7 @@ clean: run
 
 run: compile
 	chmod +x $(OBJECTS)
-	./test_dict -f ./wordlist.txt -w sim
+	./spell_checker -d ./wordlist_test.txt -t ./words.txt
 
 compile: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(OUT) $(LDFLAGS)
