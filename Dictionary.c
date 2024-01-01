@@ -55,4 +55,20 @@ void dictionary_destroy(Dictionary *dictionary){
     return;
 }
 
+void dictionary_add_word(Dictionary *dictionary, const char *word, Position *position) {
+    GList *lastPositions = dictionary_get(dictionary, word);
+
+    if (lastPositions == NULL) {
+        lastPositions = g_list_append(lastPositions, position);
+    } else {
+        lastPositions = g_list_prepend(lastPositions, position);
+    }
+
+    g_hash_table_insert(dictionary->hash_table, g_strdup(word), lastPositions);
+}
+
+GList *dictionary_get(Dictionary *dictionary, const char *word) {
+    return g_hash_table_lookup(dictionary->hash_table, word);
+}
+
 // Glib library -> https://docs.gtk.org/glib/
