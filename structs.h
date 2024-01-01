@@ -11,8 +11,8 @@ typedef struct Position {
 } Position;
 
 typedef struct Node {
-    const char * key;
-    GList *positions; // GList of Position structures
+    Position * key;
+    char * value; // GList of Position structures
 } Node;
 
 typedef struct {

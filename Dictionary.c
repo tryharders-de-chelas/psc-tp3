@@ -40,7 +40,6 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
     }
     
     fclose(file);
-    return;
 }
 // Function to lookup a word in the dictionary, if the word is in the dictionary return 1, else return 0
 
@@ -52,7 +51,6 @@ int dictionary_lookup(Dictionary *dictionary, const char *word){
 void dictionary_destroy(Dictionary *dictionary){
     g_hash_table_remove_all(dictionary -> hash_table);
     free(dictionary);
-    return;
 }
 
 // Glib library -> https://docs.gtk.org/glib/

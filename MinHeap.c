@@ -20,10 +20,11 @@ MinHeap* createMinHeap() {
 }
 
 // Function to insert a new element into the min heap
-void insert(MinHeap *minHeap, const char *key, GList * value) {
+void insert(MinHeap *minHeap, Position key, char * value) {
     Node * node = g_new(Node, 1);
-    node->positions = value;
-    g_tree_insert(minHeap->elements, g_strdup(key), node);
+    node->key = key;
+    node->value = value;
+    g_tree_insert(minHeap->elements, &(node->key), &(node->value));
 }
 
 gpointer heap_lookup(MinHeap * minHeap, const char * key){
@@ -31,19 +32,16 @@ gpointer heap_lookup(MinHeap * minHeap, const char * key){
 }
 
 // Function to extract the minimum element from the min heap
-Node * extractMin(MinHeap *minHeap) {
+char * extractMin(MinHeap *minHeap) {
     if (!g_tree_nnodes(minHeap->elements)) {
         g_assert_not_reached();  // Heap is empty
         return NULL;
     }
-
-    GTreeIter iter;
-    g_tree_get_root(minHeap->elements, &iter);
-    gpointer minValue = g_tree_key(&iter);
-
-    Node * node = g_tree_remove(minHeap->elements, minValue);
-
-    return node;
+    char * word = g_tree_node_value(
+        g_tree_node_first(minHeap->elements)
+    );
+    g_tree_remove(minHeap->elements, word);
+    return word;
 }
 
 // Function to check if the min heap is empty
@@ -52,21 +50,7 @@ gboolean isEmpty(MinHeap *minHeap) {
 }
 
 // Function to free the memory allocated for the min heap
-void freeMinHeap(MinHeap *minHeap) {
+void minHeap_destroy(MinHeap *minHeap) {
     g_tree_destroy(minHeap->elements);
     g_free(minHeap);
-}
-
-void freeNode(Node * node){
-    g_list_free_full(node->positions, g_free);
-    g_free(node);
-}
-
-void printPositions(GList *positions) {
-    while (positions != NULL) {
-        Position *pos = (Position*)positions->data;
-        printf("(%d, %d) ", pos->row, pos->column);
-        positions = g_list_next(positions);
-    }
-    printf("\n");
 }

@@ -9,14 +9,30 @@
 
 Dictionary * dictionary_create();
 
-void dictionary_add(Dictionary * dictionary, const char * filename);
+void dictionary_add(Dictionary * dictionary, char * word);
+
+void dictionary_add_word(Dictionary * dictionary, char * word);
 
 int dictionary_lookup(Dictionary * dictionary, const char * word);
 
 void dictionary_destroy(Dictionary * dictionary);
 
+MinHeap* createMinHeap();
+
+void insert(MinHeap *minHeap, Position key, char * value);
+
+char * extractMin(MinHeap *minHeap);
+
+gboolean isEmpty(MinHeap *minHeap);
+
+void minHeap_destroy(MinHeap *minHeap);
+
+void print_list_element (gpointer data,gpointer user_data){
+    Position * pos = data;
+    printf("(%s; %s); ", pos->row, pos->column);
+}
+
 void check_text(Dictionary * dict, char * text_file){
-    //MinHeap * min_heap = createMinHeap();
     FILE * file = fopen(text_file, "r");
     if(file == NULL){
         printf("[error] - couldn't open the file");
@@ -25,23 +41,37 @@ void check_text(Dictionary * dict, char * text_file){
     char words[LINE_MAX];
     const char delims[] = " \n\t";
 
+    Dictionary * not_found_dict = dictionary_create();
+    MinHeap * minHeap = createMinHeap();
     int row = 0;
     while(fgets(words, sizeof(words), file)){
         int column = 0;
         char * word = strtok(words, delims);
         while(word != NULL){
             if(dictionary_lookup(dict, word) == FALSE){
-               // TODO
-               //Position * pos = g_new(Position, 1);
-               //pos->row = row;
-               //pos->column = column;
+               if(dictionary_lookup(not_found_dict, word) == FALSE){
+                   Position pos = {.row = row, .column = column};
+                   insert(minHeap->elements, pos, word);
+               } else {
+                   dictionary_add_word(not_found_dict, word);
+               }
             }
             column++;
             word = strtok(NULL, delims);
         }
         row++;
     }
+    fclose(file);
 
+    while(isEmpty(minHeap)){
+        char * minStr = extractMin(minHeap);
+        GList * positions = g_hash_table_lookup(not_found_dict->hash_table, minStr);
+        printf("%s - ", minStr);
+        g_list_foreach(positions, print_list_element, NULL);
+        g_list_free(positions);
+    }
+    dictionary_destroy(not_found_dict);
+    minHeap_destroy(minHeap);
 }
 
 void check_word(Dictionary * dict, char * word){
@@ -62,6 +92,7 @@ void spell_check(char * text_file, char * word, char ** wordlists, int num_wordl
     } else {
         check_word(dict, word);
     }
+    dictionary_destroy(dict);
 }
 
 int main(int argc, char * argv[]){
