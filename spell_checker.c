@@ -15,8 +15,8 @@ int dictionary_lookup(Dictionary * dictionary, const char * word);
 
 void dictionary_destroy(Dictionary * dictionary);
 
-
 void check_text(Dictionary * dict, char * text_file){
+    //MinHeap * min_heap = createMinHeap();
     FILE * file = fopen(text_file, "r");
     if(file == NULL){
         printf("[error] - couldn't open the file");
@@ -25,15 +25,21 @@ void check_text(Dictionary * dict, char * text_file){
     char words[LINE_MAX];
     const char delims[] = " \n\t";
 
+    int row = 0;
     while(fgets(words, sizeof(words), file)){
+        int column = 0;
         char * word = strtok(words, delims);
         while(word != NULL){
-            //TODO
             if(dictionary_lookup(dict, word) == FALSE){
-
+               // TODO
+               //Position * pos = g_new(Position, 1);
+               //pos->row = row;
+               //pos->column = column;
             }
+            column++;
             word = strtok(NULL, delims);
         }
+        row++;
     }
 
 }

@@ -11,7 +11,10 @@ typedef struct Position {
 } Position;
 
 typedef struct Node {
-    Position * data;
-    struct Node *next;
-    struct Node *prev;
+    const char * key;
+    GList *positions; // GList of Position structures
 } Node;
+
+typedef struct {
+    GTree *elements;
+} MinHeap;
