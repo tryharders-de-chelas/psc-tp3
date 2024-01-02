@@ -7,7 +7,7 @@ OBJECTS = $(SOURCES:.c=.o)
 OUT_STATIC = test_dict_static
 OUT_DYNAMIC = test_dict_dynamic
 
-run: run_static run_dynamic
+run: run_static run_dynamic clean
 
 static: $(OBJECTS)
 	ar rcs libdictionary.a $(OBJECTS)
