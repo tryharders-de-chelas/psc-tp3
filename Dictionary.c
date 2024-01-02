@@ -34,14 +34,10 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
     while(fgets(words, sizeof(words), file)){
         char *word = strtok(words, delims);
         while(word != NULL){
-            char * word_copy = g_strdup(word);
-            g_hash_table_insert(dictionary->hash_table, word_copy, NULL);
-            //g_free(word_copy);
-            word_copy = NULL;
+            g_hash_table_insert(dictionary->hash_table, g_strdup(word), NULL);
             word = strtok(NULL, " \n\t\r");
         }
     }
-
     fclose(file);
 }
 // Function to lookup a word in the dictionary, if the word is in the dictionary return 1, else return 0

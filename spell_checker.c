@@ -36,12 +36,16 @@ void print_list_element (gpointer data,gpointer user_data){
 void show_results(Dictionary * not_found_dict, MinHeap * minHeap){
     printf("-----\nResults - start\n-----\n");
     while(!isEmpty(minHeap)){
-        char * minStr = extractMin(minHeap);
-        GList * positions = dictionary_get(not_found_dict, minStr);
+        Node * node = extractMin(minHeap);
+        char * word = node->value;
+        GList * positions = dictionary_get(not_found_dict, word);
         printf("\n-----\n");
         //printf("size of the heap - %d\n", g_tree_nnodes(minHeap->elements));
         printf("Number of appearances - %d\n", g_list_length(positions));
-        printf("%s - ", minStr);
+        printf("%s - ", word);
+        g_free(node->key);
+        g_free(node->value);
+        g_free(node);
         g_list_foreach(positions, print_list_element, NULL);
         printf("\n-----\n\n");
         g_list_foreach(positions, (GFunc)g_free, NULL);
@@ -51,7 +55,7 @@ void show_results(Dictionary * not_found_dict, MinHeap * minHeap){
 }
 
 void process_word(Dictionary * not_found_dict, MinHeap * minHeap, char * word, int row, int column){
-    Position * pos = g_malloc(sizeof(Position));
+    Position * pos = g_new(Position, 1);
     pos->row = row;
     pos->column = column;
 
@@ -174,9 +178,6 @@ int main(int argc, char * argv[]){
     spell_check(text_file, word, wordlists, num_wordlist);
 
 
-    for(int i = 0; i < num_wordlist; i++){
-        free(wordlists[i]);
-    }
     free(wordlists);
     return 0;
 }
