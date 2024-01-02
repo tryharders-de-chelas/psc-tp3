@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -Wall -Werror $(shell pkg-config --cflags glib-2.0)
-LDFLAGS = -lm $(shell pkg-config --libs glib-2.0)
-SOURCES = Dictionary.c test_dict.c
+CFLAGS = -Wall -Werror -ggdb3  $(shell pkg-config --cflags glib-2.0)
+LDFLAGS = -lm -ggdb3 $(shell pkg-config --libs glib-2.0)
+SOURCES = Dictionary.c spell_checker.c MinHeap.c
 OBJECTS = $(SOURCES:.c=.o)
-OUT = test_dict
+OUT = spell_checker
 
 test: clean
 	echo "Tested successfully"
@@ -13,7 +13,7 @@ clean: run
 
 run: compile
 	chmod +x $(OBJECTS)
-	./test_dict -f ./wordlist.txt -w sim
+	./$(OUT) -d ./wordlist-ao-20101027.txt -t ./words.txt
 
 compile: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(OUT) $(LDFLAGS)
@@ -21,3 +21,7 @@ compile: $(OBJECTS)
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
+PHONY: valgrind
+
+valgrind: compile
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(OUT) -d ./wordlist-ao-20101027.txt -t words.txt
