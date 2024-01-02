@@ -13,7 +13,7 @@ clean: run
 
 run: compile
 	chmod +x $(OBJECTS)
-	./spell_checker -d ./wordlist-ao-20101027.txt -t ./words.txt
+	./$(OUT) -d ./wordlist-ao-20101027.txt -t ./words.txt
 
 compile: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(OUT) $(LDFLAGS)
@@ -21,3 +21,7 @@ compile: $(OBJECTS)
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
+PHONY: valgrind
+
+valgrind: compile
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(OUT) -d ./wordlist-ao-20101027.txt -w adidwfsc

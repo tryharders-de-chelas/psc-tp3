@@ -13,6 +13,8 @@ void dictionary_add(Dictionary * dictionary, char * word);
 
 void dictionary_add_word(Dictionary * dictionary, const char *word, Position *position);
 
+GList *dictionary_get(Dictionary *dictionary, char *word);
+
 int dictionary_lookup(Dictionary * dictionary, const char * word);
 
 void dictionary_destroy(Dictionary * dictionary);
@@ -21,15 +23,64 @@ MinHeap* createMinHeap();
 
 void insert(MinHeap *minHeap, Position *key, char * value);
 
-char * extractMin(MinHeap *minHeap);
+gpointer extractMin(MinHeap *minHeap);
 
 gboolean isEmpty(MinHeap *minHeap);
 
 void minHeap_destroy(MinHeap *minHeap);
 
 void print_list_element (gpointer data,gpointer user_data){
-    Position * pos = data;
-    printf("(%d; %d); ", pos->row, pos->column);
+    printf("(%d; %d); ", ((Position *)data)->row, ((Position *)data)->column);
+}
+
+void show_results(Dictionary * not_found_dict, MinHeap * minHeap){
+    printf("-----\nResults - start\n-----\n");
+    while(!isEmpty(minHeap)){
+        char * minStr = extractMin(minHeap);
+        GList * positions = dictionary_get(not_found_dict, minStr);
+        printf("\n-----\n");
+        //printf("size of the heap - %d\n", g_tree_nnodes(minHeap->elements));
+        printf("Number of appearances - %d\n", g_list_length(positions));
+        printf("%s - ", minStr);
+        g_list_foreach(positions, print_list_element, NULL);
+        printf("\n-----\n\n");
+        g_list_foreach(positions, (GFunc)g_free, NULL);
+        g_list_free(positions);
+    }
+    printf("-----\nResults - end\n-----\n");
+}
+
+void process_word(Dictionary * not_found_dict, MinHeap * minHeap, char * word, int row, int column){
+    Position * pos = g_malloc(sizeof(Position));
+    pos->row = row;
+    pos->column = column;
+
+    if(dictionary_lookup(not_found_dict, word) == FALSE)
+        insert(minHeap, pos, word);
+
+    dictionary_add_word(not_found_dict, word, pos);
+
+    g_free(pos);
+}
+
+
+void process_text(FILE * file, Dictionary * dict, Dictionary * not_found_dict, MinHeap * minHeap){
+    char words[LINE_MAX_LEN];
+    const char delims[] = " \n\t";
+    
+    int row = 0;
+    while(fgets(words, sizeof(words), file) != NULL){
+        int column = 0;
+        char * word = strtok(words, delims);
+        while(word != NULL){
+            if(dictionary_lookup(dict, word) == FALSE)
+                process_word(not_found_dict, minHeap, word, row, column);
+
+            column++;
+            word = strtok(NULL, delims);
+        }
+        row++;
+    }
 }
 
 void check_text(Dictionary * dict,const char * text_file){
@@ -38,54 +89,20 @@ void check_text(Dictionary * dict,const char * text_file){
         printf("[error] - couldn't open the file\n");
         exit(EXIT_FAILURE);
     }
-    char words[LINE_MAX_LEN];
-    const char delims[] = " \n\t";
-
     Dictionary * not_found_dict = dictionary_create();
     MinHeap * minHeap = createMinHeap();
-    int row = 0;
-    while(fgets(words, sizeof(words), file)){
-        int column = 0;
-        char * word = strtok(words, delims);
-        while(word != NULL){
-            if(dictionary_lookup(dict, word) == FALSE){
-                printf("word right now: %s\n", word);
-                Position * pos = malloc(sizeof(Position));
-                pos->row = row;
-                pos->column = column;
-                if(dictionary_lookup(not_found_dict, word) == FALSE){
-                    insert(minHeap, pos, word);
-                }
-                dictionary_add_word(not_found_dict, word, pos);
-            }
-            column++;
-            word = strtok(NULL, delims);
-        }
-        row++;
-    }
+    process_text(file, dict, not_found_dict, minHeap);
     fclose(file);
-    printf("Results\n");
-    printf("----------------------------------\n");
-    while(!isEmpty(minHeap)){
-        char * minStr = extractMin(minHeap);
-        GList * positions = g_hash_table_lookup(not_found_dict->hash_table, minStr);
-        printf("size of the heap - %d\n", g_tree_nnodes(minHeap->elements));
-        printf("Number of appearances - %d\n", g_list_length(positions));
-        printf("%s - \n", minStr);
-        g_list_foreach(positions, print_list_element, NULL);
-        printf("\n");
-        g_list_free(positions);
-    }
-    printf("----------------------------------\n");
-    dictionary_destroy(not_found_dict);
+    show_results(not_found_dict, minHeap);
     minHeap_destroy(minHeap);
+    dictionary_destroy(not_found_dict);
 }
 
 void check_word(Dictionary * dict, char * word){
     if(dictionary_lookup(dict, word) == TRUE){
         printf("Every given word was found in the dictionary");
     } else {
-        printf("word: %s position: 0;0\n", word);
+        printf("word: %s position: (0; 0)\n", word);
     }
 }
 
@@ -94,11 +111,12 @@ void spell_check(char * text_file, char * word, char ** wordlists, int num_wordl
     for(int i = 0; i < num_wordlists; i++){
         dictionary_add(dict, wordlists[i]);
     }
+    
     if(word == NULL){
-        printf("\n\n\nText file was provided\n\n\n");
+        //printf("\nText file was provided\n");
         check_text(dict, text_file);
     } else {
-        printf("\n\n\nSingle word given\n\n\n");
+        //printf("\nSingle word given\n");
         check_word(dict, word);
     }
     dictionary_destroy(dict);
@@ -121,15 +139,15 @@ int main(int argc, char * argv[]){
                     printf("[error] - memory couldn't be allocated\n");
                     exit(EXIT_FAILURE);
                 }
-                printf("wordlist: %s\n", optarg);
+                //printf("wordlist: %s\n", optarg);
                 wordlists[num_wordlist++] = optarg;
                 break;
             case 't':
-                printf("text_file: %s\n", optarg);
+                //printf("text_file: %s\n", optarg);
                 text_file = optarg;
                 break;
             case 'w':
-                printf("word: %s\n", optarg);
+                //printf("word: %s\n", optarg);
                 word = optarg;
                 break;
             case ':':
@@ -149,12 +167,16 @@ int main(int argc, char * argv[]){
     }
 
     if(wordlists == NULL){
-        printf("[error] - you have to provide a wordlist");
+        printf("[error] - you have to provide a wordlist\n");
         exit(EXIT_FAILURE);
     }
 
     spell_check(text_file, word, wordlists, num_wordlist);
 
+
+    for(int i = 0; i < num_wordlist; i++){
+        free(wordlists[i]);
+    }
     free(wordlists);
     return 0;
 }

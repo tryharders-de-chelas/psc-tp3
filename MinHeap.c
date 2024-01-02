@@ -23,9 +23,9 @@ MinHeap* createMinHeap() {
 void insert(MinHeap *minHeap, Position * key, char * value) {
     Node * node = g_new(Node, 1);
     node->key = key;
-    printf("key-> row:%d, col: %d\n", key->row, key->column);
     node->value = g_strdup(value);
-    printf("value: %s\n\n", node->value);
+    //printf("key-> row:%d, col: %d\n", key->row, key->column);
+    //printf("value: %s\n\n", node->value);
     g_tree_insert(minHeap->elements, node->key, node->value);
 }
 
@@ -54,6 +54,7 @@ gboolean isEmpty(MinHeap *minHeap) {
 
 // Function to free the memory allocated for the min heap
 void minHeap_destroy(MinHeap *minHeap) {
+    g_tree_foreach(minHeap->elements, (GTraverseFunc)g_free, NULL);
     g_tree_destroy(minHeap->elements);
     g_free(minHeap);
 }

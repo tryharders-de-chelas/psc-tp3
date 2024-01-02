@@ -1,7 +1,0 @@
-sim
-sapo gato
-barco
-janela janela
-carro
-janela
-bota mota sapato janela

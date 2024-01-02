@@ -82,6 +82,6 @@ int main(int argc, char * argv[]){
     } else{
         printf("[ERROR]  - word '%s' not found in file '%s\n'", word, wordlist);
     }
-    return FALSE;
+    return 0;
 
 }
