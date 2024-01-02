@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Dictionary.h"
+#include "structs.h"
 
 #define LINESIZE 256
 
@@ -49,7 +49,6 @@ int dictionary_lookup(Dictionary *dictionary, const char *word){
     if(g_hash_table_contains(dictionary -> hash_table , word) == TRUE){
         return TRUE;
     }
-    //printf("FALSEEEEEEEEEEEE\n");
     return FALSE;
 }
 

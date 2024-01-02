@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Werror $(shell pkg-config --cflags glib-2.0)
-LDFLAGS = -lm $(shell pkg-config --libs glib-2.0)
+CFLAGS = -Wall -Werror -ggdb3  $(shell pkg-config --cflags glib-2.0)
+LDFLAGS = -lm -ggdb3 $(shell pkg-config --libs glib-2.0)
 SOURCES_STATIC = Dictionary.c test_dict_static.c
 SOURCES_DYNAMIC = Dictionary.c test_dict_dynamic.c
 OBJECTS = $(SOURCES:.c=.o)
@@ -32,3 +32,8 @@ run_static: dictionary_test_static
 
 clean:
 	rm -f $(OBJECTS) libdictionary.a libdictionary.so $(OUT_STATIC) $(OUT_DYNAMIC) 
+
+PHONY: valgrind
+
+valgrind: compile
+    valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(OUT) -d ./wordlist-ao-20101027.txt -t words.txt
