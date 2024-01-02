@@ -48,7 +48,7 @@ void dictionary_add(Dictionary *dictionary, const char *filename){
 
 int dictionary_lookup(Dictionary *dictionary, const char *word){
     return g_hash_table_contains(dictionary -> hash_table , word);
-}
+}z
 
 
 // Function to destroy the dictionary -> free all the memory of the dictionary also using malloc

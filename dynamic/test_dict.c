@@ -1,33 +1,55 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <dlfcn.h>
 #include "Dictionary.h"
 
-Dictionary * dictionary_create();
+typedef struct Dictionary Dictionary;
 
-void dictionary_add(Dictionary * dictionary, const char * filename);
+Dictionary *(*create_function)();
+void (*add_function)(Dictionary *, const char *);
+int (*lookup_function)(Dictionary *, const char *);
+void (*destroy_function)(Dictionary *);
+GList *(*get_function)(Dictionary *, const char *);
+void (*add_word_function)(Dictionary *, const char *, Position *);
 
-int dictionary_lookup(Dictionary * dictionary, const char * word);
+void *load_library() {
+    void *libHandle = dlopen("./libdictionary.so", RTLD_LAZY);
 
-void dictionary_destroy(Dictionary * dictionary);
+    if (!libHandle) {
+        fprintf(stderr, "Error loading library: %s\n", dlerror());
+        exit(EXIT_FAILURE);
+    }
 
-int setup_env(const char * wordlist, const char * word){
-    Dictionary * dict = dictionary_create();
-    dictionary_add(dict, wordlist);
-    int exists = dictionary_lookup(dict, word);
-    dictionary_destroy(dict);
-    return exists;
+    create_function = (Dictionary *(*)(void))dlsym(libHandle, "dictionary_create");
+    add_function = (void (*)(Dictionary *, const char *))dlsym(libHandle, "dictionary_add");
+    lookup_function = (int (*)(Dictionary *, const char *))dlsym(libHandle, "dictionary_lookup");
+    destroy_function = (void (*)(Dictionary *))dlsym(libHandle, "dictionary_destroy");
+    get_function = (GList *(*)(Dictionary *, const char *))dlsym(libHandle, "dictionary_get");
+    add_word_function = (void (*)(Dictionary *, const char *, Position *))dlsym(libHandle, "dictionary_add_word");
+
+    if (!create_function || !add_function || !lookup_function || !destroy_function || !get_function || !add_word_function) {
+        fprintf(stderr, "Error obtaining function pointers: %s\n", dlerror());
+        dlclose(libHandle);
+        exit(EXIT_FAILURE);
+    }
+    return libHandle;
 }
 
-int main(int argc, char * argv[]){
-    char * wordlist = NULL;
-    char * word = NULL;
-    int errflg =  0;
+void unload_library(void *lib) {
+    dlclose(lib);
+}
+
+int main(int argc, char *argv[]) {
+    char *wordlist = NULL;
+    char *word = NULL;
+    int errflg = 0;
     int opt;
 
-    while((opt = getopt(argc, argv, "w:f:")) != -1){
-        switch(opt){
+    while ((opt = getopt(argc, argv, "w:f:")) != -1) {
+        switch (opt) {
             case 'f':
                 printf("filename: %s\n", optarg);
                 wordlist = optarg;
@@ -47,25 +69,34 @@ int main(int argc, char * argv[]){
         }
     }
 
-    if(wordlist == NULL){
+    if (wordlist == NULL) {
         printf("[error] - no wordlist was given\n");
         errflg++;
     }
 
-    if(word == NULL){
+    if (word == NULL) {
         printf("[error] - no word was given\n");
         errflg++;
     }
 
-    if(errflg)
+    if (errflg)
         return 1;
 
-    if(setup_env(wordlist, word) == TRUE){
-        printf("[OK] - word '%s' found in file '%s\n'", word, wordlist);
-        return TRUE;
-    } else{
+    void *lib = load_library();  // Load the shared library
+
+    Dictionary *dict = create_function();  // Create a dictionary
+
+    // Call dictionary-related functions using function pointers
+    add_function(dict, wordlist);
+    int exists = lookup_function(dict, word);
+
+    // Unload the shared library
+    unload_library(lib);
+
+    if (exists) {
+        printf("[OK] - word '%s' found in file '%s\n'", word, wordlist); 
+    } else {
         printf("[ERROR]  - word '%s' not found in file '%s\n'", word, wordlist);
     }
-    return FALSE;
-
+     return EXIT_SUCCESS;
 }
