@@ -1,6 +1,7 @@
 #include <glib.h>
 
-// Structure of dictionary
+#define LINESIZE 5012
+
 typedef struct Dictionary {
     GHashTable *hash_table;
 } Dictionary;
@@ -12,8 +13,8 @@ typedef struct Position {
 } Position;
 
 typedef struct Node {
-    Position * key;
-    char * value; // GList of Position structures
+    Position * position;
+    char * word;
 } Node;
 
 typedef struct {

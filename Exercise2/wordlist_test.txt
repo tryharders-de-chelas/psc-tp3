@@ -1,3 +1,6 @@
-ola
-adeus
+abc
+sim
 xau
+bom
+dia
+noite

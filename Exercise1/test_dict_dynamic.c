@@ -3,7 +3,9 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <dlfcn.h>
-#include "Dictionary.h"
+#include "utils.h"
+#include "structs.h"
+#define _GNU_SOURCE
 
 typedef struct Dictionary Dictionary;
 
@@ -11,8 +13,6 @@ Dictionary *(*create_function)();
 void (*add_function)(Dictionary *, const char *);
 int (*lookup_function)(Dictionary *, const char *);
 void (*destroy_function)(Dictionary *);
-GList *(*get_function)(Dictionary *, const char *);
-void (*add_word_function)(Dictionary *, const char *, Position *);
 
 void *load_library() {
     void *libHandle = dlopen("./libdictionary.so", RTLD_LAZY);
@@ -26,10 +26,9 @@ void *load_library() {
     add_function = (void (*)(Dictionary *, const char *))dlsym(libHandle, "dictionary_add");
     lookup_function = (int (*)(Dictionary *, const char *))dlsym(libHandle, "dictionary_lookup");
     destroy_function = (void (*)(Dictionary *))dlsym(libHandle, "dictionary_destroy");
-    get_function = (GList *(*)(Dictionary *, const char *))dlsym(libHandle, "dictionary_get");
-    add_word_function = (void (*)(Dictionary *, const char *, Position *))dlsym(libHandle, "dictionary_add_word");
+   
 
-    if (!create_function || !add_function || !lookup_function || !destroy_function || !get_function || !add_word_function) {
+    if (!create_function || !add_function || !lookup_function || !destroy_function) {
         fprintf(stderr, "Error obtaining function pointers: %s\n", dlerror());
         dlclose(libHandle);
         exit(EXIT_FAILURE);
