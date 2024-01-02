@@ -63,8 +63,6 @@ void process_word(Dictionary * not_found_dict, MinHeap * minHeap, char * word, i
         insert(minHeap, pos, word);
 
     dictionary_add_word(not_found_dict, word, pos);
-
-    g_free(pos);
 }
 
 
