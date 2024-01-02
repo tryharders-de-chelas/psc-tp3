@@ -24,4 +24,4 @@ compile: $(OBJECTS)
 PHONY: valgrind
 
 valgrind: compile
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(OUT) -d ./wordlist-ao-20101027.txt -t words.txt
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(OUT) -d ./wordlist-ao-20101027.txt -d ./wordlist_test.txt -t words.txt
