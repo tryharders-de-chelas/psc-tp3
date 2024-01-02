@@ -6,22 +6,23 @@ OBJECTS = $(SOURCES:.c=.o)
 OUT = spell_checker
 
 test: clean
-	echo "Tested successfully"
+	@echo "Tested successfully"
 
 clean: run
-	rm -f $(OBJECTS) $(OUT)
+	@rm -f $(OBJECTS) $(OUT)
 
 run: compile
-	chmod +x $(OBJECTS)
-	./$(OUT) -d ./wordlist-ao-20101027.txt -t ./words.txt
+	@chmod +x $(OBJECTS)
+	@./$(OUT) -d ./wordlist-ao-20101027.txt -t ./words.txt
 
 compile: $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(OUT) $(LDFLAGS)
+	@$(CC) $(OBJECTS) -o $(OUT) $(LDFLAGS)
 
 %.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+	@$(CC) -c $(CFLAGS) $< -o $@
 
 PHONY: valgrind
 
 valgrind: compile
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(OUT) -d ./wordlist-ao-20101027.txt -d ./wordlist_test.txt -t words.txt
+	@rm -f $(OBJECTS) $(OUT) 
