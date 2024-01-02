@@ -13,7 +13,7 @@ clean: run
 
 run: compile
 	chmod +x $(OBJECTS)
-	./spell_checker -d ./wordlist_test.txt -t ./words.txt
+	./spell_checker -d ./wordlist-ao-20101027.txt -t ./words.txt
 
 compile: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(OUT) $(LDFLAGS)

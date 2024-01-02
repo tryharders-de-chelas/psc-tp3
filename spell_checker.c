@@ -11,7 +11,7 @@ Dictionary * dictionary_create();
 
 void dictionary_add(Dictionary * dictionary, char * word);
 
-void dictionary_add_word(Dictionary * dictionary, char * word);
+void dictionary_add_word(Dictionary * dictionary, const char *word, Position *position);
 
 int dictionary_lookup(Dictionary * dictionary, const char * word);
 
@@ -19,7 +19,7 @@ void dictionary_destroy(Dictionary * dictionary);
 
 MinHeap* createMinHeap();
 
-void insert(MinHeap *minHeap, Position key, char * value);
+void insert(MinHeap *minHeap, Position *key, char * value);
 
 char * extractMin(MinHeap *minHeap);
 
@@ -50,12 +50,13 @@ void check_text(Dictionary * dict,const char * text_file){
         while(word != NULL){
             if(dictionary_lookup(dict, word) == FALSE){
                 printf("word right now: %s\n", word);
-               if(dictionary_lookup(not_found_dict, word) == FALSE){
-                   Position pos = {.row = row, .column = column};
-                   insert(minHeap, pos, word);
-               } else {
-                   dictionary_add_word(not_found_dict, word);
-               }
+                Position * pos = malloc(sizeof(Position));
+                pos->row = row;
+                pos->column = column;
+                if(dictionary_lookup(not_found_dict, word) == FALSE){
+                    insert(minHeap, pos, word);
+                }
+                dictionary_add_word(not_found_dict, word, pos);
             }
             column++;
             word = strtok(NULL, delims);
@@ -63,16 +64,19 @@ void check_text(Dictionary * dict,const char * text_file){
         row++;
     }
     fclose(file);
-
+    printf("Results\n");
+    printf("----------------------------------\n");
     while(!isEmpty(minHeap)){
         char * minStr = extractMin(minHeap);
-        printf("%s\n", minStr);
-        break;
         GList * positions = g_hash_table_lookup(not_found_dict->hash_table, minStr);
-        printf("%s - ", minStr);
+        printf("size of the heap - %d\n", g_tree_nnodes(minHeap->elements));
+        printf("Number of appearances - %d\n", g_list_length(positions));
+        printf("%s - \n", minStr);
         g_list_foreach(positions, print_list_element, NULL);
+        printf("\n");
         g_list_free(positions);
     }
+    printf("----------------------------------\n");
     dictionary_destroy(not_found_dict);
     minHeap_destroy(minHeap);
 }

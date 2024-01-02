@@ -12,7 +12,7 @@ typedef struct Position {
 } Position;
 
 typedef struct Node {
-    Position key;
+    Position * key;
     char * value; // GList of Position structures
 } Node;
 
