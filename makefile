@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Werror $(shell pkg-config --cflags glib-2.0)
-LDFLAGS = -lm $(shell pkg-config --libs glib-2.0)
+CFLAGS = -Wall -Werror -ggdb3  $(shell pkg-config --cflags glib-2.0)
+LDFLAGS = -lm -ggdb3 $(shell pkg-config --libs glib-2.0)
 SOURCES = Dictionary.c spell_checker.c MinHeap.c
 OBJECTS = $(SOURCES:.c=.o)
 OUT = spell_checker

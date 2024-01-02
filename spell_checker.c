@@ -43,13 +43,12 @@ void show_results(Dictionary * not_found_dict, MinHeap * minHeap){
         //printf("size of the heap - %d\n", g_tree_nnodes(minHeap->elements));
         printf("Number of appearances - %d\n", g_list_length(positions));
         printf("%s - ", word);
-        g_free(node->key);
-        g_free(node->value);
-        g_free(node);
         g_list_foreach(positions, print_list_element, NULL);
         printf("\n-----\n\n");
         g_list_foreach(positions, (GFunc)g_free, NULL);
         g_list_free(positions);
+        g_free(node->value);
+        g_free(node);
     }
     printf("-----\nResults - end\n-----\n");
 }
