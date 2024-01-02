@@ -61,11 +61,11 @@ int main(int argc, char * argv[]){
         return 1;
 
     if(setup_env(wordlist, word) == TRUE){
-        printf("[OK] - word '%s' found in file '%s\n'", word, wordlist);
-        return TRUE;
-    } else{
+        printf("[OK] - word '%s' found in file '%s\n'", word, wordlist); 
+    } else {
         printf("[ERROR]  - word '%s' not found in file '%s\n'", word, wordlist);
     }
-    return FALSE;
-
+     return EXIT_SUCCESS;
 }
+
+
